@@ -386,7 +386,7 @@ def admin_update_appointment_status(appointment_id):
                 service_label = appt.get("service_label") or "your appointment"
                 status_readable = status.capitalize()
                 if phone:
-                    msg = f"Hello {first}, your {service_label} appointment on {appointment_date} at {appointment_time} is now {status_readable}. Please call for more information."
+                    msg = f"Hello {first}, your {service_label} appointment on {appointment_date} at {appointment_time} is now {status_readable}. Please call +233 245 257 707 for more information."
                     ok, details = send_sms(phone, msg)
                     if not ok:
                         app.logger.warning("SMS send failed for status update %s: %s", appointment_id, details)
@@ -418,7 +418,7 @@ def admin_cancel_appointment(appointment_id):
                 appointment_time = appt.get("appointment_time")
                 service_label = appt.get("service_label") or "your appointment"
                 if phone:
-                    msg = f"Hello {first}, your {service_label} appointment on {appointment_date} at {appointment_time} has been cancelled."
+                    msg = f"Hello {first}, your {service_label} appointment on {appointment_date} at {appointment_time} has been cancelled please call +233 245 257 707 for more information."
                     ok, details = send_sms(phone, msg)
                     if not ok:
                         app.logger.warning("SMS send failed for cancel %s: %s", appointment_id, details)
@@ -582,7 +582,7 @@ def api_appointments():
             appointment_date = (created_rec or {}).get("appointment_date")
             appointment_time = (created_rec or {}).get("appointment_time")
             if phone:
-                msg = f"Hi {first}, thanks for booking {service_label} on {appointment_date} at {appointment_time}. Please confirm by calling us."
+                msg = f"Hi {first}, thanks for booking {service_label} on {appointment_date} at {appointment_time}. Please confirm by calling us on +233 245 257 707."
                 ok, details = send_sms(phone, msg)
                 if not ok:
                     app.logger.warning("SMS send failed for new appointment %s: %s", created_rec.get("id"), details)
