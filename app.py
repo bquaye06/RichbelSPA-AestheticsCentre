@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 from flask import redirect, session, flash, url_for
 from flask_cors import CORS
+from whitenoise import WhiteNoise
 import os
 import re
 import requests
@@ -22,6 +23,9 @@ app.config.from_object(config[env])
 
 # Enable CORS
 CORS(app, resources={r"/api/*": {"origins": app.config["CORS_ORIGINS"]}})
+
+# Configure WhiteNoise for static file serving on production (Render/Gunicorn)
+app.wsgi_app = WhiteNoise(app.wsgi_app, root="static", prefix="static/")
 
 SUPABASE_URL = app.config.get("SUPABASE_URL")
 SUPABASE_SERVICE_KEY = app.config.get("SUPABASE_SERVICE_KEY")
