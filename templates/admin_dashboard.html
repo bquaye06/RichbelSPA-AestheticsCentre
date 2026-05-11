@@ -307,7 +307,6 @@
 
       async function refreshDashboard() {
         try {
-          if (window.showSiteLoader) window.showSiteLoader();
           const response = await fetch(refreshUrl, { credentials: 'same-origin' });
           if (!response.ok) return;
           const data = await response.json();
@@ -327,12 +326,10 @@
           renderAppointments(appointments);
           renderQueue(appointments);
           renderStats(stats);
-          if (window.hideSiteLoader) window.hideSiteLoader();
           lastSignature = signature;
           lastTotal = stats.total || 0;
         } catch (error) {
           console.warn('Dashboard refresh failed:', error);
-          if (window.hideSiteLoader) window.hideSiteLoader();
         }
       }
 

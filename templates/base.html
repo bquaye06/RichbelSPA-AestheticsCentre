@@ -81,15 +81,6 @@
 
   <div id="overlay" class="overlay" hidden></div>
 
-  <!-- Global site loader (used across admin pages) -->
-  <div id="siteLoader" class="site-loader" hidden aria-hidden="true">
-    <div class="site-loader-backdrop"></div>
-    <div class="site-loader-panel" role="status" aria-live="polite">
-      <div class="site-loader-spinner" aria-hidden="true"></div>
-      <div class="site-loader-text">Working…</div>
-    </div>
-  </div>
-
   {% if not hide_booking_modal %}
   <div id="bookingModal" class="booking-modal" hidden>
     <div class="booking-modal-backdrop" data-booking-close></div>
@@ -105,52 +96,7 @@
   </div>
   {% endif %}
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const loader = document.getElementById('siteLoader');
-      function showLoader() {
-        if (!loader) return;
-        loader.hidden = false;
-        document.body.classList.add('modal-open');
-      }
-      function hideLoader() {
-        if (!loader) return;
-        loader.hidden = true;
-        document.body.classList.remove('modal-open');
-      }
-      // Expose globally
-      window.showSiteLoader = showLoader;
-      window.hideSiteLoader = hideLoader;
 
-      // Show loader for native form submits
-      document.addEventListener('submit', (ev) => {
-        try { showLoader(); } catch (e) { /* ignore */ }
-      }, true);
-
-      // Show loader for clicks that navigate or submit
-      document.addEventListener('click', (ev) => {
-        const btn = ev.target.closest('button, a');
-        if (!btn) return;
-        // ignore elements that opt-out
-        if (btn.hasAttribute('data-skip-loader') || btn.closest('[data-no-loader]')) return;
-        // show loader for link navigations (same origin) and form buttons
-        if (btn.tagName === 'A') {
-          const href = btn.getAttribute('href');
-          const target = btn.getAttribute('target');
-          if (href && !href.startsWith('#') && !target) {
-            showLoader();
-          }
-        } else if (btn.tagName === 'BUTTON') {
-          const type = (btn.getAttribute('type') || '').toLowerCase();
-          if (type === 'submit' || btn.form) showLoader();
-        }
-      }, true);
-
-      // Hide loader on page show (back/forward) and when DOM is ready
-      window.addEventListener('pageshow', () => hideLoader());
-      hideLoader();
-    });
-  </script>
 
   {% block content %}{% endblock %}
 
