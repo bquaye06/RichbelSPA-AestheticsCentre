@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{% block title %}Rhichbel SPA — Aesthetics Centre{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='images/logo.jpg') }}" type="image/jpeg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="container nav-inner">
+        <button id="menuBtn" class="menu-btn mobile-menu" aria-label="Open menu" aria-expanded="false" aria-controls="sidePanel">
+          <span class="hamburger"><span></span><span></span><span></span></span>
+        </button>
+
+        <a class="brand" href="/" aria-label="Rhichbel home">
+          <img class="brand-logo" src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Rhichbel SPA logo" />
+        </a>
+
+        <div class="nav-right desktop-nav">
+          <ul class="nav-links">
+            <li><a href="/home">Home</a></li>
+            <li><a href="/services">Services</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/gallery">Gallery</a></li>
+            <li><a href="/contact">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Top bar with contact and socials -->
+  <div class="top-bar">
+    <div class="container top-bar-inner">
+      <div class="top-left">
+        <span class="top-phone">CALL US: <a href="tel:+233245257707">+233 245 257 707</a></span>
+      </div>
+      <div class="top-right">
+        <div class="social-icons">
+          <a href="https://www.instagram.com/rhichbel?igsh=MTIycXc5cDdmeWdtMw==" class="social-icon" aria-label="Instagram" title="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+          <a href="https://www.tiktok.com/@rhichbel?_r=1&_t=ZS-96EwsYcIgUC" class="social-icon" aria-label="TikTok" title="TikTok"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a>
+          <a href="https://www.snapchat.com/add/dr_rhichbel" class="social-icon" aria-label="Snapchat" title="Snapchat"><i class="fa-brands fa-snapchat" aria-hidden="true"></i></a>
+        </div>
+        <a href="/appointment#booking-form" class="book-btn" data-book-appointment>BOOK NOW</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Side panel / drawer -->
+  <aside id="sidePanel" class="side-panel" aria-hidden="true">
+    <div class="side-panel-inner">
+      <button id="closeBtn" class="close-btn" aria-label="Close menu">×</button>
+      <nav class="side-nav">
+        <ul>
+          <li><a href="/" class="side-link">Home</a></li>
+          <li><a href="/services" class="side-link">Services</a></li>
+          <li><a href="/about" class="side-link">About</a></li>
+          <li><a href="/gallery" class="side-link">Gallery</a></li>
+          <li><a href="/contact" class="side-link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="side-footer">
+        <div class="social-icons">
+          <a href="https://www.snapchat.com/add/dr_rhichbel" class="social-icon" aria-label="Snapchat" title="Snapchat"><i class="fa-brands fa-snapchat" aria-hidden="true"></i></a>
+          <a href="https://www.instagram.com/rhichbel/" class="social-icon" aria-label="Instagram" title="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+          <a href="https://www.tiktok.com/@rhichbel?_r=1&_t=ZS-96EwsYcIgUC" class="social-icon" aria-label="TikTok" title="TikTok"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a>
+          <a href="https://www.facebook.com/rhichbel" class="social-icon" aria-label="Facebook" title="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div id="overlay" class="overlay" hidden></div>
+
+  <!-- Global site loader (used across admin pages) -->
+  <div id="siteLoader" class="site-loader" hidden aria-hidden="true">
+    <div class="site-loader-backdrop"></div>
+    <div class="site-loader-panel" role="status" aria-live="polite">
+      <div class="site-loader-spinner" aria-hidden="true"></div>
+      <div class="site-loader-text">Working…</div>
+    </div>
+  </div>
+
+  {% if not hide_booking_modal %}
+  <div id="bookingModal" class="booking-modal" hidden>
+    <div class="booking-modal-backdrop" data-booking-close></div>
+    <div class="booking-modal-panel" role="dialog" aria-modal="true" aria-labelledby="bookingModalTitle">
+      <button type="button" class="booking-modal-close" aria-label="Close booking form" data-booking-close>×</button>
+      <div class="booking-modal-header">
+        <p class="booking-modal-kicker">Book Appointment</p>
+        <h2 id="bookingModalTitle">Reserve Your Consultation</h2>
+        <p>Tell us what you need and our team will review your request with care.</p>
+      </div>
+      {% include '_appointment_form_fields.html' %}
+    </div>
+  </div>
+  {% endif %}
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('siteLoader');
+      function showLoader() {
+        if (!loader) return;
+        loader.hidden = false;
+        document.body.classList.add('modal-open');
+      }
+      function hideLoader() {
+        if (!loader) return;
+        loader.hidden = true;
+        document.body.classList.remove('modal-open');
+      }
+      // Expose globally
+      window.showSiteLoader = showLoader;
+      window.hideSiteLoader = hideLoader;
+
+      // Show loader for native form submits
+      document.addEventListener('submit', (ev) => {
+        try { showLoader(); } catch (e) { /* ignore */ }
+      }, true);
+
+      // Show loader for clicks that navigate or submit
+      document.addEventListener('click', (ev) => {
+        const btn = ev.target.closest('button, a');
+        if (!btn) return;
+        // ignore elements that opt-out
+        if (btn.hasAttribute('data-skip-loader') || btn.closest('[data-no-loader]')) return;
+        // show loader for link navigations (same origin) and form buttons
+        if (btn.tagName === 'A') {
+          const href = btn.getAttribute('href');
+          const target = btn.getAttribute('target');
+          if (href && !href.startsWith('#') && !target) {
+            showLoader();
+          }
+        } else if (btn.tagName === 'BUTTON') {
+          const type = (btn.getAttribute('type') || '').toLowerCase();
+          if (type === 'submit' || btn.form) showLoader();
+        }
+      }, true);
+
+      // Hide loader on page show (back/forward) and when DOM is ready
+      window.addEventListener('pageshow', () => hideLoader());
+      hideLoader();
+    });
+  </script>
+
+  {% block content %}{% endblock %}
+
+  <footer class="site-footer">
+    <div class="container footer-main">
+      <div class="footer-brand">
+        <a class="footer-logo-link" href="/" aria-label="Rhichbel home">
+          <img class="footer-logo" src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Rhichbel logo" />
+        </a>
+        <p class="footer-tagline">Clinical aesthetics with a luxury touch. Personalized care, visible results, and a serene wellness experience.</p>
+        <div class="footer-socials">
+          <a href="https://www.instagram.com/rhichbel?igsh=MTIycXc5cDdmeWdtMw==" class="social-icon" aria-label="Instagram" title="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+          <a href="https://www.tiktok.com/@rhichbel?_r=1&_t=ZS-96EwsYcIgUC" class="social-icon" aria-label="TikTok" title="TikTok"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a>
+          <a href="https://www.snapchat.com/add/dr_rhichbel" class="social-icon" aria-label="Snapchat" title="Snapchat"><i class="fa-brands fa-snapchat" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h3 class="footer-heading">Quick Links</h3>
+        <ul class="footer-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/services">Services</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/gallery">Gallery</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3 class="footer-heading">Business Hours</h3>
+        <ul class="footer-hours">
+          <li><span>Sunday</span><strong>Closed</strong></li>
+          <li><span>Mon, Wed, Thu</span><strong>11AM-6PM</strong></li>
+          <li><span>Tuesday</span><strong>10:30AM-7PM</strong></li>
+          <li><span>Friday</span><strong>10:30AM-6PM</strong></li>
+          <li><span>Saturday</span><strong>10AM-4PM</strong></li>
+        </ul>
+      </div>
+
+      <div class="footer-section footer-contact">
+        <h3 class="footer-heading">Contact</h3>
+        <p class="footer-phone"><a href="tel:+233245257707">+233 245 257 707</a></p>
+        <p class="footer-location">Rhichbel SPA<br />Accra, Ghana</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p>&copy; 2026 Rhichbel SPA & Aesthethics Centre. All rights reserved.</p>
+        <p class="footer-note">Designed for luxury care and confidence.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

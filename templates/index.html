@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Home — Rhichbel SPA{% endblock %}
+
+{% block content %}
+  <main class="home-page">
+    <section id="hero" class="home-hero">
+      <div class="container home-hero-grid">
+        <div class="home-hero-copy">
+          <p class="hero-kicker">Luxury Aesthetics In Accra</p>
+          <h1 class="home-hero-title">Clinically Led Beauty, <span>Crafted Like Ritual</span></h1>
+          <p class="home-hero-sub">Rhichbel SPA combines science-backed treatments with a refined sanctuary experience. Every appointment is tailored for visible results and calm confidence.</p>
+
+          <div class="hero-ctas home-hero-ctas">
+            <a href="/appointment#booking-form" class="btn btn-primary" data-book-appointment>Book Appointment</a>
+            <a href="/gallery" class="btn btn-secondary">View Gallery</a>
+          </div>
+
+          <div class="hero-metrics" aria-label="Rhichbel highlights">
+            <div class="metric-card">
+              <strong>10+</strong>
+              <span>Years Expertise</span>
+            </div>
+            <div class="metric-card">
+              <strong>6k+</strong>
+              <span>Client Sessions</span>
+            </div>
+            <div class="metric-card">
+              <strong>5-Star</strong>
+              <span>Client Care Focus</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="home-hero-visual">
+          <img class="hero-feature-image" src="{{ url_for('static', filename='images/gal2.jpg') }}" alt="Rhichbel featured treatment ambiance" />
+          <div class="floating-note note-top">Result-Driven Care</div>
+          <div class="floating-note note-bottom">Personalized Treatment Plans</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="featured-service home-signature">
+      <div class="container featured-grid">
+        <div class="featured-text">
+          <p class="featured-label">Signature Experience</p>
+          <h2 class="featured-title">Premium Facial Experience</h2>
+          <p class="featured-desc">A complete skin-renewal protocol designed to brighten, smooth, and hydrate in one session. Perfect for clients who want immediate glow with long-term skin health support.</p>
+          <ul class="signature-list">
+            <li>Deep cleansing and skin prep</li>
+            <li>Targeted active serums and hydration</li>
+            <li>Aftercare guidance tailored to your skin type</li>
+          </ul>
+          <a href="/services" class="featured-link">Explore Full Service Menu</a>
+        </div>
+        <div class="featured-image-wrap">
+          <img class="featured-image" src="{{ url_for('static', filename='images/gal8.jpg') }}" alt="Premium facial treatment at Rhichbel" />
+        </div>
+      </div>
+    </section>
+
+    <section class="location home-location">
+      <div class="container location-grid">
+        <div class="location-info-full">
+          <h2>Visit Our Spa</h2>
+          <p class="location-address">
+            Rhichbel Spa And Aesthetics Center<br>
+            HQWX+9WV, Accra
+          </p>
+          <p class="location-contact">
+            <strong>Find us:</strong><br>
+            <a href="https://www.google.com/maps/dir/5.57676,-0.2279911/Rhichbel+Spa+And+Aesthetics+Center,+HQWX%2B9WV,+Accra/@5.5789935,-0.2238772,14.47z/data=!4m9!4m8!1m1!4e1!1m5!1m1!1s0xfdf9b006ca6503f:0xc8d0eda1e8175e7a!2m2!1d-0.2001697!2d5.5959928!5m1!1e4?entry=ttu&g_ep=EgoyMDI2MDUwNi4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer" class="location-link">Open directions in Google Maps</a>
+          </p>
+        </div>
+        <div class="location-map">
+          <iframe
+            title="Rhichbel Spa location map"
+            src="https://www.google.com/maps?q=Rhichbel+Spa+And+Aesthetics+Center,+HQWX%2B9WV,+Accra&output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact — Rhichbel SPA{% endblock %}
+
+{% block content %}
+  <main class="contact-page">
+    <section class="contact-hero">
+      <div class="container">
+        <p class="contact-kicker">Book a Consultation</p>
+        <h1>Speak With Our Team</h1>
+        <p class="contact-hero-sub">Whether you are ready to book or simply need guidance on the right treatment, our team is here to help with clear advice, fast responses, and a refined client experience.</p>
+      </div>
+    </section>
+
+    <section class="contact-details">
+      <div class="container">
+        <div class="contact-grid">
+          <div class="contact-panel contact-panel-primary">
+            <h2>Contact Information</h2>
+            <p class="contact-panel-copy">Reach us through the channel that suits you best. We aim to respond promptly and professionally.</p>
+
+            <div class="contact-card-grid">
+              <div class="contact-card">
+                <span class="contact-card-label">Phone</span>
+                <a href="tel:+233123456789">+233 123 456 789</a>
+              </div>
+              <div class="contact-card">
+                <span class="contact-card-label">Email</span>
+                <a href="mailto:info@rhichbelspa.com">rhichbelspaandaesthetics@gmail.com</a>
+              </div>
+              <div class="contact-card">
+                <span class="contact-card-label">Location</span>
+                <p>Rhichbel Spa And Aesthetics Center<br>HQWX+9WV, Accra</p>
+              </div>
+              <div class="contact-card">
+                <span class="contact-card-label">Direct Booking</span>
+                <a href="/services">Explore Services</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="contact-panel contact-panel-hours">
+            <h2>Business Hours</h2>
+            <ul class="hours-list">
+              <li><span>Sunday</span><strong>Closed</strong></li>
+              <li><span>Monday — Thursday</span><strong>11AM — 6PM</strong></li>
+              <li><span>Friday</span><strong>10:30AM — 6PM</strong></li>
+              <li><span>Saturday</span><strong>10AM — 4PM</strong></li>
+            </ul>
+
+            <div class="contact-hours-note">
+              <p>For the smoothest experience, we recommend booking ahead so we can prepare a tailored consultation for you.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact-visit">
+      <div class="container visit-grid">
+        <div class="visit-copy">
+          <p class="section-label">Visit Us</p>
+          <h2>Find Our Spa In Accra</h2>
+          <p>Our location is designed to feel calm, private, and welcoming from the moment you arrive. Use the map below to plan your visit or open directions directly in Google Maps.</p>
+
+          <div class="visit-actions">
+            <a href="https://www.google.com/maps/dir/5.57676,-0.2279911/Rhichbel+Spa+And+Aesthetics+Center,+HQWX%2B9WV,+Accra/@5.5789935,-0.2238772,14.47z/data=!4m9!4m8!1m1!4e1!1m5!1m1!1s0xfdf9b006ca6503f:0xc8d0eda1e8175e7a!2m2!1d-0.2001697!2d5.5959928!5m1!1e4?entry=ttu&g_ep=EgoyMDI2MDUwNi4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer" class="cta-link">Open Directions</a>
+            <a href="/services" class="cta-link cta-link-secondary">View Services</a>
+          </div>
+        </div>
+
+        <div class="visit-map-wrap">
+          <iframe
+            title="Rhichbel Spa location map"
+            src="https://www.google.com/maps?q=Rhichbel+Spa+And+Aesthetics+Center,+HQWX%2B9WV,+Accra&output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact-cta">
+      <div class="container">
+        <h2>Ready When You Are</h2>
+        <p>Book your consultation and let our team guide you toward the treatment plan that best fits your goals.</p>
+        <a href="/appointment#booking-form" class="book-btn" data-book-appointment>Book Appointment</a>
+      </div>
+    </section>
+  </main>
+{% endblock %}

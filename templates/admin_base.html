@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{% block title %}Admin — Rhichbel SPA{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='images/logo.jpg') }}" type="image/jpeg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body class="admin-shell">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <a class="admin-brand" href="/admin/dashboard">
+        <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Rhichbel logo" />
+        <div>
+          <strong>Rhichbel Admin</strong>
+          <span>Operations Console</span>
+        </div>
+      </a>
+
+      <div class="admin-sidebar-preview">
+        <p class="admin-sidebar-preview-label"><i class="fas fa-shield-heart"></i> Secure session</p>
+        <strong>Premium booking management</strong>
+        <span>Oversee appointments, service updates, and admin settings from one refined workspace.</span>
+      </div>
+
+      <nav class="admin-nav">
+        <a href="/admin/dashboard" class="admin-nav-link {% block nav_dashboard_class %}is-active{% endblock %}"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
+        <a href="/admin/settings" class="admin-nav-link {% block nav_settings_class %}{% endblock %}"><i class="fas fa-gear"></i><span>Settings</span></a>
+        <a href="/admin/logout" class="admin-nav-link admin-nav-link-muted"><i class="fas fa-right-from-bracket"></i><span>Logout</span></a>
+      </nav>
+
+      <div class="admin-sidebar-note">
+        <p>Signed in as</p>
+        <strong>{{ admin_email }}</strong>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-topbar">
+        <div class="admin-topbar-copy">
+          <p class="admin-kicker">Rhichbel Spa & Aesthetics Centre</p>
+          <h1>{% block heading %}Admin Dashboard{% endblock %}</h1>
+          <p class="admin-topbar-subtitle">A focused workspace for appointments, service operations, and admin controls.</p>
+        </div>
+        <div class="admin-topbar-actions">
+          <div class="admin-user-chip">
+            <span class="admin-user-chip-label">Admin</span>
+            <strong>{{ admin_email }}</strong>
+          </div>
+          <a href="/admin/logout" class="admin-logout-btn"><i class="fas fa-right-from-bracket"></i><span>Logout</span></a>
+        </div>
+      </header>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="admin-flashes">
+            {% for category, message in messages %}
+              <div class="admin-flash admin-flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

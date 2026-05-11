@@ -1,0 +1,400 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Admin Dashboard — Rhichbel SPA{% endblock %}
+{% block heading %}Appointments Overview{% endblock %}
+
+{% block content %}
+  <section class="admin-hero">
+    <div class="admin-hero-copy">
+      <p class="admin-hero-eyebrow"><i class="fas fa-wand-magic-sparkles"></i> Operations at a glance</p>
+      <h2>Manage every booking with clarity, speed, and polish.</h2>
+      <p>
+        This dashboard keeps the service calendar organized, highlights priority work, and gives the team a clean control panel for client care.
+      </p>
+    </div>
+    <div class="admin-hero-surface">
+      <div class="admin-hero-stat">
+        <span>Total appointments</span>
+        <strong>{{ stats.total }}</strong>
+      </div>
+      <div class="admin-hero-meta">
+        <div>
+          <span>Pending</span>
+          <strong>{{ stats.pending }}</strong>
+        </div>
+        <div>
+          <span>Confirmed</span>
+          <strong>{{ stats.confirmed }}</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="admin-stats">
+    <div class="admin-stat-card"><i class="fas fa-inbox"></i><span>Total</span><strong>{{ stats.total }}</strong></div>
+    <div class="admin-stat-card"><i class="fas fa-hourglass-half"></i><span>Pending</span><strong>{{ stats.pending }}</strong></div>
+    <div class="admin-stat-card"><i class="fas fa-badge-check"></i><span>Confirmed</span><strong>{{ stats.confirmed }}</strong></div>
+    <div class="admin-stat-card"><i class="fas fa-circle-check"></i><span>Completed</span><strong>{{ stats.completed }}</strong></div>
+    <div class="admin-stat-card"><i class="fas fa-circle-xmark"></i><span>Cancelled</span><strong>{{ stats.cancelled }}</strong></div>
+  </section>
+
+  <section class="admin-grid">
+    <div class="admin-panel admin-panel-primary">
+      <div class="admin-panel-header">
+        <div>
+          <p class="admin-panel-kicker">Live records</p>
+          <h2>Appointment Records</h2>
+          <div class="admin-live-meta" aria-live="polite">
+            <span class="admin-live-dot" aria-hidden="true"></span>
+            <span class="admin-live-text">Last updated: <strong id="adminLastUpdated">--:--:--</strong></span>
+          </div>
+        </div>
+        <p>View, edit, cancel, or delete client bookings directly from the backend.</p>
+      </div>
+
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Client</th>
+              <th>Contact</th>
+              <th>Service</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for appointment in appointments %}
+            <tr>
+              <td>
+                <strong>{{ appointment.first_name }} {{ appointment.last_name }}</strong>
+              </td>
+              <td>
+                <div>{{ appointment.email }}</div>
+                <div class="muted">{{ appointment.phone }}</div>
+              </td>
+              <td>
+                <strong>{{ appointment.service_label }}</strong>
+                {% if appointment.notes %}<div class="muted">{{ appointment.notes }}</div>{% endif %}
+              </td>
+              <td>{{ appointment.appointment_date }}</td>
+              <td>{{ appointment.appointment_time[:5] if appointment.appointment_time else '' }}</td>
+              <td>
+                <form method="post" action="/admin/appointments/{{ appointment.id }}/status" class="admin-inline-form">
+                  <select name="status">
+                    {% for option in ['pending', 'confirmed', 'completed', 'cancelled'] %}
+                      <option value="{{ option }}" {% if appointment.status == option %}selected{% endif %}>{{ option|capitalize }}</option>
+                    {% endfor %}
+                  </select>
+                  <button type="submit" class="admin-mini-btn">Update</button>
+                </form>
+              </td>
+              <td>
+                <div class="admin-actions">
+                  <a href="/admin/appointments/{{ appointment.id }}/edit" class="admin-mini-link"><i class="fas fa-pen-to-square"></i>Edit</a>
+                  <form method="post" action="/admin/appointments/{{ appointment.id }}/cancel">
+                    <button type="submit" class="admin-mini-link admin-mini-link-warning"><i class="fas fa-ban"></i>Cancel</button>
+                  </form>
+                  <form method="post" action="/admin/appointments/{{ appointment.id }}/delete">
+                    <button
+                      type="button"
+                      class="admin-mini-link admin-mini-link-danger"
+                      data-delete-trigger
+                      data-delete-action="/admin/appointments/{{ appointment.id }}/delete"
+                      data-delete-name="{{ appointment.first_name }} {{ appointment.last_name }}"
+                    ><i class="fas fa-trash-can"></i>Delete</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <aside class="admin-panel admin-panel-queue">
+      <div class="admin-panel-header">
+        <div>
+          <p class="admin-panel-kicker">Priority queue</p>
+          <h2>Upcoming appointments</h2>
+        </div>
+        <p>Quick view of the first items in the schedule so the team can prioritize the day.</p>
+      </div>
+
+      <div class="admin-queue-list">
+        {% for appointment in appointments[:5] %}
+          <article class="admin-queue-item">
+            <div>
+              <strong>{{ appointment.first_name }} {{ appointment.last_name }}</strong>
+              <span>{{ appointment.service_label }}</span>
+            </div>
+            <div class="admin-queue-meta">
+              <span>{{ appointment.appointment_date }}</span>
+              <strong>{{ appointment.appointment_time[:5] if appointment.appointment_time else '' }}</strong>
+            </div>
+            <span class="admin-status-pill admin-status-{{ appointment.status|default('pending') }}">{{ appointment.status|capitalize }}</span>
+          </article>
+        {% else %}
+          <div class="admin-empty-state">
+            <i class="fas fa-calendar-days"></i>
+            <p>No appointments yet.</p>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="admin-insight-card">
+        <p class="admin-panel-kicker">Admin note</p>
+        <strong>Keep the dashboard focused on the next action.</strong>
+        <span>Use this panel to spot what needs confirmation, follow-up, or cancellation without scanning the whole table.</span>
+      </div>
+    </aside>
+  </section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const refreshUrl = '/api/admin/appointments';
+      const refreshInterval = 10000;
+      const tableBody = document.querySelector('.admin-table tbody');
+      const queueList = document.querySelector('.admin-queue-list');
+      const statCards = document.querySelectorAll('.admin-stat-card strong');
+      const heroTotal = document.querySelector('.admin-hero-stat strong');
+      const heroMetaPending = document.querySelector('.admin-hero-meta div:first-child strong');
+      const heroMetaConfirmed = document.querySelector('.admin-hero-meta div:last-child strong');
+      const lastUpdatedNode = document.getElementById('adminLastUpdated');
+      const liveToast = document.getElementById('adminLiveToast');
+      let lastSignature = null;
+      let lastTotal = Number.parseInt((heroTotal && heroTotal.textContent) || '0', 10) || 0;
+      let toastTimer = null;
+
+      function escapeHtml(value) {
+        return String(value ?? '')
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#39;');
+      }
+
+      function renderStatusOptions(currentStatus) {
+        return ['pending', 'confirmed', 'completed', 'cancelled']
+          .map(option => `<option value="${option}" ${currentStatus === option ? 'selected' : ''}>${option.charAt(0).toUpperCase() + option.slice(1)}</option>`)
+          .join('');
+      }
+
+      function renderAppointments(appointments) {
+        if (!tableBody) return;
+
+        tableBody.innerHTML = appointments.map(appointment => `
+          <tr>
+            <td><strong>${escapeHtml(appointment.first_name)} ${escapeHtml(appointment.last_name)}</strong></td>
+            <td>
+              <div>${escapeHtml(appointment.email)}</div>
+              <div class="muted">${escapeHtml(appointment.phone)}</div>
+            </td>
+            <td>
+              <strong>${escapeHtml(appointment.service_label)}</strong>
+              ${appointment.notes ? `<div class="muted">${escapeHtml(appointment.notes)}</div>` : ''}
+            </td>
+            <td>${escapeHtml(appointment.appointment_date)}</td>
+            <td>${escapeHtml((appointment.appointment_time || '').slice(0, 5))}</td>
+            <td>
+              <form method="post" action="/admin/appointments/${escapeHtml(appointment.id)}/status" class="admin-inline-form">
+                <select name="status">${renderStatusOptions((appointment.status || 'pending').toLowerCase())}</select>
+                <button type="submit" class="admin-mini-btn">Update</button>
+              </form>
+            </td>
+            <td>
+              <div class="admin-actions">
+                <a href="/admin/appointments/${escapeHtml(appointment.id)}/edit" class="admin-mini-link"><i class="fas fa-pen-to-square"></i>Edit</a>
+                <form method="post" action="/admin/appointments/${escapeHtml(appointment.id)}/cancel">
+                  <button type="submit" class="admin-mini-link admin-mini-link-warning"><i class="fas fa-ban"></i>Cancel</button>
+                </form>
+                <form method="post" action="/admin/appointments/${escapeHtml(appointment.id)}/delete">
+                  <button
+                    type="button"
+                    class="admin-mini-link admin-mini-link-danger"
+                    data-delete-trigger
+                    data-delete-action="/admin/appointments/${escapeHtml(appointment.id)}/delete"
+                    data-delete-name="${escapeHtml(appointment.first_name)} ${escapeHtml(appointment.last_name)}"
+                  ><i class="fas fa-trash-can"></i>Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      function renderQueue(appointments) {
+        if (!queueList) return;
+
+        const items = appointments.slice(0, 5);
+        queueList.innerHTML = items.length ? items.map(appointment => `
+          <article class="admin-queue-item">
+            <div>
+              <strong>${escapeHtml(appointment.first_name)} ${escapeHtml(appointment.last_name)}</strong>
+              <span>${escapeHtml(appointment.service_label)}</span>
+            </div>
+            <div class="admin-queue-meta">
+              <span>${escapeHtml(appointment.appointment_date)}</span>
+              <strong>${escapeHtml((appointment.appointment_time || '').slice(0, 5))}</strong>
+            </div>
+            <span class="admin-status-pill admin-status-${escapeHtml((appointment.status || 'pending').toLowerCase())}">${escapeHtml((appointment.status || 'pending').charAt(0).toUpperCase() + (appointment.status || 'pending').slice(1))}</span>
+          </article>
+        `).join('') : `
+          <div class="admin-empty-state">
+            <i class="fas fa-calendar-days"></i>
+            <p>No appointments yet.</p>
+          </div>
+        `;
+      }
+
+      function renderStats(stats) {
+        const values = [stats.total, stats.pending, stats.confirmed, stats.completed, stats.cancelled];
+        statCards.forEach((node, index) => {
+          if (values[index] !== undefined) node.textContent = values[index];
+        });
+
+        if (heroTotal) heroTotal.textContent = stats.total;
+        if (heroMetaPending) heroMetaPending.textContent = stats.pending;
+        if (heroMetaConfirmed) heroMetaConfirmed.textContent = stats.confirmed;
+      }
+
+      function setLastUpdated(date) {
+        if (!lastUpdatedNode) return;
+        const text = new Intl.DateTimeFormat(undefined, {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        }).format(date);
+        lastUpdatedNode.textContent = text;
+      }
+
+      function getDataSignature(appointments, stats) {
+        const compactAppointments = (appointments || []).map((appointment) => [
+          appointment.id,
+          appointment.status,
+          appointment.updated_at,
+          appointment.appointment_date,
+          appointment.appointment_time,
+          appointment.first_name,
+          appointment.last_name,
+          appointment.phone,
+          appointment.notes,
+          appointment.service_label,
+        ]);
+        return JSON.stringify({ stats, appointments: compactAppointments });
+      }
+
+      function showNewAppointmentToast(newCount) {
+        if (!liveToast) return;
+        const safeCount = Math.max(0, Number(newCount) || 0);
+        if (!safeCount) return;
+        liveToast.textContent = safeCount === 1
+          ? '1 new appointment just arrived.'
+          : `${safeCount} new appointments just arrived.`;
+        liveToast.hidden = false;
+        liveToast.classList.add('is-visible');
+
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          liveToast.classList.remove('is-visible');
+          liveToast.hidden = true;
+        }, 2600);
+      }
+
+      async function refreshDashboard() {
+        try {
+          if (window.showSiteLoader) window.showSiteLoader();
+          const response = await fetch(refreshUrl, { credentials: 'same-origin' });
+          if (!response.ok) return;
+          const data = await response.json();
+          const appointments = data.appointments || [];
+          const stats = data.stats || { total: 0, pending: 0, confirmed: 0, completed: 0, cancelled: 0 };
+          const signature = getDataSignature(appointments, stats);
+          setLastUpdated(new Date());
+
+          if (signature === lastSignature) {
+            return;
+          }
+
+          if (lastSignature !== null && (stats.total || 0) > lastTotal) {
+            showNewAppointmentToast((stats.total || 0) - lastTotal);
+          }
+
+          renderAppointments(appointments);
+          renderQueue(appointments);
+          renderStats(stats);
+          if (window.hideSiteLoader) window.hideSiteLoader();
+          lastSignature = signature;
+          lastTotal = stats.total || 0;
+        } catch (error) {
+          console.warn('Dashboard refresh failed:', error);
+          if (window.hideSiteLoader) window.hideSiteLoader();
+        }
+      }
+
+      refreshDashboard();
+      setInterval(refreshDashboard, refreshInterval);
+
+      const deleteModal = document.getElementById('deleteAppointmentModal');
+      const deleteModalForm = document.getElementById('deleteAppointmentForm');
+      const deleteModalName = document.getElementById('deleteAppointmentName');
+      const deleteModalCloseButtons = document.querySelectorAll('[data-delete-close]');
+
+      function openDeleteModal(action, clientName) {
+        if (!deleteModal || !deleteModalForm) return;
+        deleteModalForm.action = action;
+        if (deleteModalName) deleteModalName.textContent = clientName || 'this appointment';
+        deleteModal.hidden = false;
+        document.body.classList.add('modal-open');
+      }
+
+      function closeDeleteModal() {
+        if (!deleteModal) return;
+        deleteModal.hidden = true;
+        document.body.classList.remove('modal-open');
+      }
+
+      document.addEventListener('click', (event) => {
+        const trigger = event.target.closest('[data-delete-trigger]');
+        if (!trigger) return;
+        event.preventDefault();
+        openDeleteModal(trigger.dataset.deleteAction, trigger.dataset.deleteName);
+      });
+
+      deleteModalCloseButtons.forEach((button) => button.addEventListener('click', closeDeleteModal));
+      deleteModal?.addEventListener('click', (event) => {
+        if (event.target === deleteModal) closeDeleteModal();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && deleteModal && !deleteModal.hidden) closeDeleteModal();
+      });
+    });
+  </script>
+
+  <div id="deleteAppointmentModal" class="booking-modal" hidden>
+    <div class="booking-modal-backdrop" data-delete-close></div>
+    <div class="booking-modal-panel admin-delete-modal-panel" role="dialog" aria-modal="true" aria-labelledby="deleteAppointmentTitle">
+      <button type="button" class="booking-modal-close" aria-label="Close delete confirmation" data-delete-close>×</button>
+      <div class="booking-modal-header">
+        <p class="booking-modal-kicker">Confirm deletion</p>
+        <h2 id="deleteAppointmentTitle">Delete appointment</h2>
+        <p>
+          This will permanently remove <strong id="deleteAppointmentName">this appointment</strong> from the dashboard.
+          This action cannot be undone.
+        </p>
+      </div>
+      <div class="admin-delete-modal-actions">
+        <button type="button" class="admin-mini-btn admin-delete-cancel" data-delete-close>Keep appointment</button>
+        <form id="deleteAppointmentForm" method="post" action="">
+          <button type="submit" class="admin-mini-link admin-mini-link-danger"><i class="fas fa-trash-can"></i>Delete permanently</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="adminLiveToast" class="admin-live-toast" hidden role="status" aria-live="polite"></div>
+{% endblock %}

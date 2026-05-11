@@ -1,0 +1,64 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Edit Appointment — Rhichbel SPA{% endblock %}
+{% block heading %}Edit Appointment{% endblock %}
+
+{% block content %}
+  <section class="admin-panel">
+    <div class="admin-panel-header">
+      <h2>{{ appointment.first_name }} {{ appointment.last_name }}</h2>
+      <p>Update the booking details, service, time, or status as needed.</p>
+    </div>
+
+    <form method="post" class="admin-form appointment-form">
+      <div class="form-grid two-col">
+        <label class="field-group"><span>First Name</span><input type="text" name="first_name" value="{{ appointment.first_name }}" required /></label>
+        <label class="field-group"><span>Last Name</span><input type="text" name="last_name" value="{{ appointment.last_name }}" required /></label>
+      </div>
+
+      <div class="form-grid two-col">
+        <label class="field-group"><span>Email</span><input type="email" name="email" value="{{ appointment.email }}" required /></label>
+        <label class="field-group"><span>Phone</span><input type="tel" name="phone" value="{{ appointment.phone }}" required /></label>
+      </div>
+
+      <div class="form-grid two-col">
+        <label class="field-group field-span-2">
+          <span>Service</span>
+          <select name="service_variant_id" required>
+            {% for service in services %}
+              <option value="{{ service.variant_id }}" {% if service.variant_id == appointment.service_variant_id %}selected{% endif %}>
+                {{ service.service_name }} - {{ service.variant_name }}
+              </option>
+            {% endfor %}
+          </select>
+        </label>
+      </div>
+
+      <div class="form-grid two-col">
+        <label class="field-group"><span>Date</span><input type="date" name="appointment_date" value="{{ appointment.appointment_date }}" required /></label>
+        <label class="field-group"><span>Time</span><input type="text" name="appointment_time" value="{{ appointment.appointment_time[:5] if appointment.appointment_time else '' }}" placeholder="9:30" pattern="^([0-1]?\d|2[0-3]):[0-5]\d$" required /></label>
+      </div>
+
+      <div class="form-grid two-col">
+        <label class="field-group field-span-2">
+          <span>Status</span>
+          <select name="status" required>
+            {% for option in ['pending', 'confirmed', 'completed', 'cancelled'] %}
+              <option value="{{ option }}" {% if appointment.status == option %}selected{% endif %}>{{ option|capitalize }}</option>
+            {% endfor %}
+          </select>
+        </label>
+      </div>
+
+      <label class="field-group">
+        <span>Notes</span>
+        <textarea name="notes" rows="4">{{ appointment.notes or '' }}</textarea>
+      </label>
+
+      <div class="form-actions">
+        <button type="submit" class="book-btn">Save Changes</button>
+        <a href="/admin/dashboard" class="admin-back-link">Back to Dashboard</a>
+      </div>
+    </form>
+  </section>
+{% endblock %}

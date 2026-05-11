@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin Login — Rhichbel SPA</title>
+  <link rel="icon" href="{{ url_for('static', filename='images/logo.jpg') }}" type="image/jpeg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body class="admin-login-page">
+  <div class="admin-login-bg">
+    <svg class="admin-login-gradient" viewBox="0 0 1200 800" preserveAspectRatio="none">
+      <defs>
+        <filter id="blur">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="80" />
+        </filter>
+      </defs>
+      <rect width="1200" height="800" fill="#070707"/>
+      <circle cx="15%" cy="10%" r="300" fill="#d4af37" opacity="0.08" filter="url(#blur)"/>
+      <circle cx="85%" cy="80%" r="350" fill="#d4af37" opacity="0.06" filter="url(#blur)"/>
+    </svg>
+  </div>
+
+  <main class="admin-login-container">
+    <div class="admin-login-content">
+      <section class="admin-login-panel">
+        <div class="admin-login-branding">
+          <div class="admin-login-branding-top">
+            <div class="admin-login-mark">
+              <i class="fas fa-spa"></i>
+            </div>
+            <h2 class="admin-login-brand">Rhichbel</h2>
+            <p class="admin-login-tagline">Luxury Spa & Aesthetics</p>
+
+            <div class="admin-login-branding-copy">
+              <h2>Private access for the team behind the experience.</h2>
+              <p>
+                Manage appointments, review client requests, and keep every booking running smoothly from one refined dashboard.
+              </p>
+            </div>
+          </div>
+
+          <div class="admin-login-features">
+            <div class="admin-feature">
+              <i class="fas fa-calendar-check"></i>
+              <span>Appointment Management</span>
+            </div>
+            <div class="admin-feature">
+              <i class="fas fa-user-cog"></i>
+              <span>Settings & Controls</span>
+            </div>
+            <div class="admin-feature">
+              <i class="fas fa-shield-alt"></i>
+              <span>Secure Admin Access</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-login-form-wrapper">
+          <div class="admin-login-copy">
+            <p class="admin-login-kicker">
+              <i class="fas fa-lock-open"></i> Private Access
+            </p>
+            <h1>Welcome back.</h1>
+            <p>Sign in to access the Rhichbel admin portal and manage bookings, client details, and settings.</p>
+          </div>
+
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              <div class="admin-flashes">
+                {% for category, message in messages %}
+                  <div class="admin-flash admin-flash-{{ category }}">
+                    <i class="fas fa-{% if category == 'error' %}exclamation-circle{% else %}check-circle{% endif %}"></i>
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endwith %}
+
+          <form class="admin-login-form" method="post" action="/admin/login">
+            <div class="admin-form-group">
+              <label for="email">Email Address</label>
+              <div class="admin-form-input-wrapper">
+                <i class="fas fa-envelope"></i>
+                <input 
+                  type="email" 
+                  id="email"
+                  name="email" 
+                  value="{{ admin_email }}" 
+                  placeholder="admin@richbelspa.com"
+                  autocomplete="email" 
+                  required 
+                />
+              </div>
+            </div>
+
+            <div class="admin-form-group">
+              <label for="password">Password</label>
+              <div class="admin-form-input-wrapper">
+                <i class="fas fa-lock"></i>
+                <input 
+                  type="password" 
+                  id="password"
+                  name="password" 
+                  placeholder="Enter your password"
+                  autocomplete="current-password" 
+                  required 
+                />
+              </div>
+            </div>
+
+            <button type="submit" class="admin-login-btn">
+              <span>Sign In</span>
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </form>
+
+          <p class="admin-login-footer">
+            <i class="fas fa-info-circle"></i>
+            Admin credentials are required to access this portal.
+          </p>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

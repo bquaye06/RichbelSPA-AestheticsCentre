@@ -1,0 +1,104 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Admin Settings — Rhichbel SPA{% endblock %}
+{% block heading %}Admin Settings{% endblock %}
+{% block nav_dashboard_class %}{% endblock %}
+{% block nav_settings_class %}is-active{% endblock %}
+
+{% block content %}
+  <section class="admin-settings-shell">
+    <div class="admin-hero admin-settings-hero">
+      <div class="admin-hero-copy">
+        <p class="admin-hero-eyebrow"><i class="fas fa-lock"></i> Security controls</p>
+        <h2>Protect your operations workspace with confidence.</h2>
+        <p>
+          Keep the Rhichbel admin console secure with strong credential hygiene.
+          Password updates are encrypted and applied instantly to your admin account.
+        </p>
+      </div>
+      <div class="admin-hero-surface">
+        <div class="admin-hero-stat">
+          <span>Account email</span>
+          <strong>{{ admin_email }}</strong>
+        </div>
+        <div class="admin-hero-meta">
+          <div>
+            <span>Policy</span>
+            <strong>8+ characters</strong>
+          </div>
+          <div>
+            <span>Access scope</span>
+            <strong>Administrator</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-settings-grid">
+      <section class="admin-panel admin-settings-form-panel">
+        <div class="admin-panel-header">
+          <p class="admin-panel-kicker">Credentials</p>
+          <h2>Update Password</h2>
+          <p>The admin email is fixed for this workspace and cannot be changed here.</p>
+        </div>
+
+        <form method="post" class="admin-settings-form">
+          <label class="admin-settings-field">
+            <span>Admin Email</span>
+            <div class="admin-settings-input-wrap">
+              <i class="fas fa-envelope"></i>
+              <input type="email" value="{{ admin_email }}" readonly class="admin-settings-readonly" />
+            </div>
+          </label>
+
+          <label class="admin-settings-field">
+            <span>Current Password</span>
+            <div class="admin-settings-input-wrap">
+              <i class="fas fa-key"></i>
+              <input type="password" name="current_password" autocomplete="current-password" required />
+            </div>
+          </label>
+
+          <label class="admin-settings-field">
+            <span>New Password</span>
+            <div class="admin-settings-input-wrap">
+              <i class="fas fa-shield-halved"></i>
+              <input type="password" name="new_password" minlength="8" autocomplete="new-password" required />
+            </div>
+          </label>
+
+          <label class="admin-settings-field">
+            <span>Confirm New Password</span>
+            <div class="admin-settings-input-wrap">
+              <i class="fas fa-check-double"></i>
+              <input type="password" name="confirm_password" minlength="8" autocomplete="new-password" required />
+            </div>
+          </label>
+
+          <div class="admin-settings-actions">
+            <button type="submit" class="book-btn admin-settings-submit">
+              <i class="fas fa-floppy-disk"></i>
+              <span>Save New Password</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="admin-panel admin-settings-security-panel">
+        <p class="admin-panel-kicker">Best practice</p>
+        <h3>Security Checklist</h3>
+        <ul class="admin-settings-checklist">
+          <li><i class="fas fa-circle-check"></i><span>Use a unique password not reused on any personal account.</span></li>
+          <li><i class="fas fa-circle-check"></i><span>Include uppercase, lowercase, numbers, and symbols for stronger entropy.</span></li>
+          <li><i class="fas fa-circle-check"></i><span>Rotate credentials regularly when team responsibilities change.</span></li>
+          <li><i class="fas fa-circle-check"></i><span>Avoid sharing admin credentials through email or chat threads.</span></li>
+        </ul>
+        <div class="admin-insight-card">
+          <p class="admin-panel-kicker">Rhichbel note</p>
+          <strong>Trust is built with secure operations.</strong>
+          <span>Every update helps protect client bookings and maintain a premium experience end-to-end.</span>
+        </div>
+      </aside>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,59 @@
+<form class="appointment-form" data-appointment-form>
+  <div class="form-status" data-form-status aria-live="polite"></div>
+
+  <div class="form-grid two-col">
+    <label class="field-group">
+      <span>First Name</span>
+      <input type="text" name="first_name" autocomplete="given-name" required />
+    </label>
+
+    <label class="field-group">
+      <span>Last Name</span>
+      <input type="text" name="last_name" autocomplete="family-name" required />
+    </label>
+  </div>
+
+  <div class="form-grid two-col">
+    <label class="field-group">
+      <span>Email Address</span>
+      <input type="email" name="email" autocomplete="email" required />
+    </label>
+
+    <label class="field-group">
+      <span>Phone Number</span>
+      <input type="tel" name="phone" autocomplete="tel" required />
+    </label>
+  </div>
+
+  <div class="form-grid two-col">
+    <label class="field-group field-span-2">
+      <span>Treatment / Service</span>
+      <select name="service_variant_id" data-service-select required>
+        <option value="">Loading services...</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="form-grid two-col">
+    <label class="field-group">
+      <span>Preferred Date</span>
+      <input type="date" name="appointment_date" data-appointment-date required />
+    </label>
+
+    <label class="field-group">
+      <span>Preferred Time</span>
+      <input type="text" name="appointment_time" inputmode="numeric" autocomplete="off" placeholder="9:30" pattern="^([0-1]?\d|2[0-3]):[0-5]\d$" aria-describedby="appointment-time-hint" required />
+      <small id="appointment-time-hint" class="field-hint">Use hour and minute only, like 9:30 or 17:00.</small>
+    </label>
+  </div>
+
+  <label class="field-group">
+    <span>Notes</span>
+    <textarea name="notes" rows="4" placeholder="Tell us about your goals, concerns, or anything we should prepare for."></textarea>
+  </label>
+
+  <div class="form-actions">
+    <button type="submit" class="book-btn">Confirm Appointment</button>
+    <p class="form-hint">By submitting this form, you are requesting a booking. Our team will review and confirm availability.</p>
+  </div>
+</form>

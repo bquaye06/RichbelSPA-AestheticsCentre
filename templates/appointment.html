@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Appointment — Rhichbel SPA{% endblock %}
+
+{% block content %}
+  <main class="appointment-page">
+    <section class="appointment-hero">
+      <div class="container appointment-hero-grid">
+        <div class="appointment-hero-copy">
+          <p class="appointment-kicker">Reserve Your Visit</p>
+          <h1>Book A Private Consultation</h1>
+          <p class="appointment-hero-sub">Complete the form below and our team will review your request, match you with the right treatment, and confirm the best available time.</p>
+
+          <div class="appointment-points">
+            <div class="appointment-point">
+              <span>1</span>
+              <p>Choose the exact treatment or service variant you want.</p>
+            </div>
+            <div class="appointment-point">
+              <span>2</span>
+              <p>Select a preferred date and time that works for you.</p>
+            </div>
+            <div class="appointment-point">
+              <span>3</span>
+              <p>We review your request and follow up with confirmation.</p>
+            </div>
+          </div>
+        </div>
+
+        <aside class="appointment-sidecard">
+          <p class="sidecard-label">What to expect</p>
+          <h2>Professional, Private, Premium</h2>
+          <p>Every booking request is handled with care. Our team keeps the process simple, discreet, and focused on your comfort and results.</p>
+          <ul class="sidecard-list">
+            <li>Clear treatment selection</li>
+            <li>Fast response time</li>
+            <li>Tailored consultation support</li>
+          </ul>
+          <a href="/gallery" class="sidecard-link">View Results</a>
+        </aside>
+      </div>
+    </section>
+
+    <section id="booking-form" class="appointment-form-section">
+      <div class="container">
+        <div class="appointment-form-shell">
+          <div class="appointment-form-copy">
+            <p class="section-label">Appointment Form</p>
+            <h2>Tell Us About Your Booking</h2>
+            <p>Share the details we need to prepare for your visit. The more complete your request, the more precise our follow-up can be.</p>
+          </div>
+
+          {% include '_appointment_form_fields.html' %}
+        </div>
+      </div>
+    </section>
+  </main>
+{% endblock %}

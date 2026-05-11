@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Gallery — Rhichbel SPA{% endblock %}
+
+{% block content %}
+  <main class="gallery-page">
+    {% set gallery_images = [
+      'gal1.jpg', 'gal2.jpg', 'gal3.jpg', 'gal4.jpg', 'gal5.jpg',
+      'gal6.jpg', 'gal7.jpg', 'gal8.jpg', 'gal9.jpg', 'gal10.jpg',
+      'gal11.jpg', 'gal12.jpg', 'gal13.jpg', 'gal14.jpg', 'gal15.jpg',
+      'gal16.jpg', 'gal17.jpg', 'gal18.jpg', 'gal19.jpg', 'gal20.jpg'
+    ] %}
+
+    <!-- Gallery Hero Section -->
+    <section class="gallery-hero">
+      <div class="container">
+        <p class="gallery-kicker">Our Work</p>
+        <h1>Moments That Matter</h1>
+        <p class="gallery-hero-sub">Discover the transformations, elegant facilities, and premium care that define the Rhichbel experience. Each image tells a story of confidence restored and beauty enhanced.</p>
+      </div>
+    </section>
+
+    <!-- Slideshow Section -->
+    <section id="gallery" class="gallery">
+      <div class="container">
+        <div class="gallery-intro">
+          <h2>Gallery Showcase</h2>
+          <p>Scroll through our curated collection of facilities, treatments, and client results that reflect our commitment to aesthetic excellence.</p>
+        </div>
+        
+        <div class="slideshow-container">
+          <div class="slideshow-wrapper">
+            {% for image in gallery_images %}
+            <div class="slide fade">
+              <img src="{{ url_for('static', filename='images/' ~ image) }}" alt="Gallery slide {{ loop.index }}" />
+            </div>
+            {% endfor %}
+
+            <!-- Controls -->
+            <button class="slide-btn prev-btn" onclick="changeSlide(-1)" aria-label="Previous slide">❮</button>
+            <button class="slide-btn next-btn" onclick="changeSlide(1)" aria-label="Next slide">❯</button>
+
+            <!-- Slide counter -->
+            <div class="slide-counter">
+              <span id="currentSlide">1</span> / {{ gallery_images|length }}
+            </div>
+          </div>
+
+          <!-- Slide dots/indicators -->
+          <div class="slide-dots">
+            {% for image in gallery_images %}
+            <span class="dot" data-slide="{{ loop.index }}"></span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery CTA Section -->
+    <section class="gallery-cta">
+      <div class="container">
+        <h2>Inspired by What You See?</h2>
+        <p>Our gallery represents just a fraction of the transformations we've made possible. Every treatment is customized to your unique goals and anatomy.</p>
+        <a href="/services" class="cta-link">Explore Our Services</a>
+      </div>
+    </section>
+  </main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let slideIndex = 1;
+  let slideTimer;
+
+  function changeSlide(n) {
+    clearTimeout(slideTimer);
+    showSlide(slideIndex += n);
+    autoSlide();
+  }
+
+  function currentSlide(n) {
+    clearTimeout(slideTimer);
+    showSlide(slideIndex = n);
+    autoSlide();
+  }
+
+  function showSlide(n) {
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    
+    if (n > slides.length) {
+      slideIndex = 1;
+    }
+    if (n < 1) {
+      slideIndex = slides.length;
+    }
+    
+    slides.forEach(slide => slide.style.display = 'none');
+    dots.forEach(dot => dot.classList.remove('active'));
+    
+    slides[slideIndex - 1].style.display = 'block';
+    dots[slideIndex - 1].classList.add('active');
+    document.getElementById('currentSlide').textContent = slideIndex;
+  }
+
+  function autoSlide() {
+    slideTimer = setTimeout(() => {
+      slideIndex++;
+      showSlide(slideIndex);
+      autoSlide();
+    }, 5000); // Change slide every 5 seconds
+  }
+
+  document.querySelectorAll('.dot[data-slide]').forEach(dot => {
+    dot.addEventListener('click', () => {
+      currentSlide(Number(dot.dataset.slide));
+    });
+  });
+
+  // Initialize slideshow
+  showSlide(slideIndex);
+  autoSlide();
+</script>
+{% endblock %}

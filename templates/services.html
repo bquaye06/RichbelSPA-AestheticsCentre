@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Services — Rhichbel SPA{% endblock %}
+
+{% block content %}
+  <main class="services-page">
+    <section id="services" class="services-hero">
+      <div class="container">
+        <p class="services-kicker">Treatment Catalogue</p>
+        <h1>Curated Services For Results And Ritual</h1>
+        <p class="services-intro">Every service at Rhichbel is tailored with clinical precision and aesthetic excellence. Select from focused treatments or complete renewal plans.</p>
+
+        <div class="services-highlights" aria-label="Service highlights">
+          <span class="highlight-pill">Licensed Specialists</span>
+          <span class="highlight-pill">Evidence-Based Protocols</span>
+          <span class="highlight-pill">Personalized Aftercare</span>
+          <span class="highlight-pill">Live Menu (<span id="serviceCount">0</span> services)</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="services-catalog">
+      <div class="container">
+        <div class="services-controls" aria-label="Filter services">
+          <label class="services-search" for="serviceSearch">
+            <span>Search services</span>
+            <input id="serviceSearch" type="search" placeholder="Facial, peel, laser, injectables..." autocomplete="off" />
+          </label>
+          <div id="serviceFilters" class="service-filters" role="tablist" aria-label="Service categories"></div>
+          <p id="servicesMeta" class="services-meta" aria-live="polite">Showing 0 of 0 services</p>
+        </div>
+
+        <div id="service-list" class="service-grid" aria-live="polite">
+          <p class="services-loading">Loading services...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+{% endblock %}
