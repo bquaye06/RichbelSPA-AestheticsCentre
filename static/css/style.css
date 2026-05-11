@@ -174,7 +174,7 @@ header::before {
   place-items: center;
   padding: 1.25rem;
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 .admin-login-bg {
@@ -215,6 +215,18 @@ header::before {
     0 28px 70px rgba(0, 0, 0, 0.42),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(16px);
+  max-height: 90vh;
+  max-height: 90dvh;
+}
+
+@media (max-width: 900px) {
+  .admin-login-panel {
+    grid-template-columns: 1fr;
+    max-height: none;
+  }
+  .admin-login-branding {
+    display: none;
+  }
 }
 
 .admin-login-branding {
@@ -228,6 +240,7 @@ header::before {
     linear-gradient(180deg, rgba(212, 175, 55, 0.06), rgba(0, 0, 0, 0.22)),
     linear-gradient(145deg, rgba(18, 18, 18, 0.92), rgba(7, 7, 7, 0.98));
   border-right: 1px solid rgba(212, 175, 55, 0.12);
+  overflow-y: auto;
 }
 
 .admin-login-branding::before {
