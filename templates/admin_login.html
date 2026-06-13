@@ -13,16 +13,9 @@
 </head>
 <body class="admin-login-page">
   <div class="admin-login-bg">
-    <svg class="admin-login-gradient" viewBox="0 0 1200 800" preserveAspectRatio="none">
-      <defs>
-        <filter id="blur">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="80" />
-        </filter>
-      </defs>
-      <rect width="1200" height="800" fill="#070707"/>
-      <circle cx="15%" cy="10%" r="300" fill="#d4af37" opacity="0.08" filter="url(#blur)"/>
-      <circle cx="85%" cy="80%" r="350" fill="#d4af37" opacity="0.06" filter="url(#blur)"/>
-    </svg>
+    <div class="admin-login-orb admin-login-orb-one"></div>
+    <div class="admin-login-orb admin-login-orb-two"></div>
+    <div class="admin-login-orb admin-login-orb-three"></div>
   </div>
 
   <main class="admin-login-container">
@@ -34,7 +27,7 @@
               <i class="fas fa-spa"></i>
             </div>
             <h2 class="admin-login-brand">Rhichbel</h2>
-            <p class="admin-login-tagline">Luxury Spa & Aesthetics</p>
+            <p class="admin-login-tagline">Luxury Spa &amp; Aesthetics</p>
 
             <div class="admin-login-branding-copy">
               <h2>Private access for the team behind the experience.</h2>
@@ -71,10 +64,10 @@
 
           {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-              <div class="admin-flashes">
+              <div class="admin-login-notices">
                 {% for category, message in messages %}
-                  <div class="admin-flash admin-flash-{{ category }}">
-                    <i class="fas fa-{% if category == 'error' %}exclamation-circle{% else %}check-circle{% endif %}"></i>
+                  <div class="admin-login-notice admin-login-notice-{{ category }}" role="status">
+                    <i class="fas fa-{% if category == 'error' %}circle-xmark{% else %}circle-check{% endif %}"></i>
                     {{ message }}
                   </div>
                 {% endfor %}
@@ -82,51 +75,100 @@
             {% endif %}
           {% endwith %}
 
-          <form class="admin-login-form" method="post" action="/admin/login">
+          <form class="admin-login-form" method="post" action="/admin/login" novalidate>
             <div class="admin-form-group">
-              <label for="email">Email Address</label>
               <div class="admin-form-input-wrapper">
-                <i class="fas fa-envelope"></i>
+                <span class="admin-input-icon" aria-hidden="true"><i class="fas fa-envelope"></i></span>
                 <input 
                   type="email" 
                   id="email"
                   name="email" 
+                  class="admin-form-input"
                   value="{{ admin_email }}" 
-                  placeholder="admin@richbelspa.com"
+                  placeholder=" "
                   autocomplete="email" 
                   required 
                 />
+                <label for="email">Email Address</label>
               </div>
             </div>
 
             <div class="admin-form-group">
-              <label for="password">Password</label>
               <div class="admin-form-input-wrapper">
-                <i class="fas fa-lock"></i>
+                <span class="admin-input-icon" aria-hidden="true"><i class="fas fa-lock"></i></span>
                 <input 
                   type="password" 
                   id="password"
                   name="password" 
-                  placeholder="Enter your password"
+                  class="admin-form-input"
+                  placeholder=" "
                   autocomplete="current-password" 
                   required 
                 />
+                <label for="password">Password</label>
+                <button type="button" class="admin-password-toggle" aria-label="Show password" data-password-toggle>
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+              <div class="admin-form-row">
+                <a href="#" class="admin-forgot-link">Forgot Password?</a>
               </div>
             </div>
 
-            <button type="submit" class="admin-login-btn">
-              <span>Sign In</span>
-              <i class="fas fa-arrow-right"></i>
+            <button type="submit" class="admin-login-btn" data-login-submit>
+              <span class="admin-login-btn-text">Sign In</span>
+              <span class="admin-login-btn-spinner" aria-hidden="true"></span>
+              <i class="fas fa-arrow-right admin-login-btn-arrow" aria-hidden="true"></i>
             </button>
           </form>
 
           <p class="admin-login-footer">
-            <i class="fas fa-info-circle"></i>
+            <i class="fas fa-lock"></i>
             Admin credentials are required to access this portal.
           </p>
+
+          <p class="admin-login-security-note">Secured by Rhichbel Systems</p>
         </div>
       </section>
     </div>
   </main>
+
+  <script>
+    (() => {
+      const form = document.querySelector('.admin-login-form');
+      const submitButton = document.querySelector('[data-login-submit]');
+      const passwordInput = document.getElementById('password');
+      const toggleButton = document.querySelector('[data-password-toggle]');
+      const loginInputs = document.querySelectorAll('.admin-form-input');
+
+      if (toggleButton && passwordInput) {
+        toggleButton.addEventListener('click', () => {
+          const hidden = passwordInput.type === 'password';
+          passwordInput.type = hidden ? 'text' : 'password';
+          toggleButton.setAttribute('aria-label', hidden ? 'Hide password' : 'Show password');
+          toggleButton.querySelector('i')?.classList.toggle('fa-eye', !hidden);
+          toggleButton.querySelector('i')?.classList.toggle('fa-eye-slash', hidden);
+        });
+      }
+
+      if (form && submitButton) {
+        form.addEventListener('submit', () => {
+          submitButton.classList.add('is-loading');
+          submitButton.setAttribute('aria-busy', 'true');
+          submitButton.disabled = true;
+        });
+      }
+
+      loginInputs.forEach((input) => {
+        const syncState = () => {
+          input.classList.toggle('is-dirty', input.value.trim().length > 0);
+        };
+
+        input.addEventListener('blur', syncState);
+        input.addEventListener('input', syncState);
+        syncState();
+      });
+    })();
+  </script>
 </body>
 </html>

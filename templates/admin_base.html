@@ -12,6 +12,13 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
 <body class="admin-shell">
+  <div id="adminPageLoader" class="admin-page-loader" aria-hidden="true">
+    <div class="admin-page-loader-card" role="status" aria-live="polite" aria-label="Loading dashboard">
+      <div class="admin-page-loader-ring" aria-hidden="true"></div>
+      <div class="admin-page-loader-mark" aria-hidden="true">RB</div>
+      <p class="admin-page-loader-text">Loading...</p>
+    </div>
+  </div>
   <div class="admin-layout">
     <aside class="admin-sidebar">
       <a class="admin-brand" href="/admin/dashboard">
@@ -47,27 +54,115 @@
           <h1>{% block heading %}Admin Dashboard{% endblock %}</h1>
           <p class="admin-topbar-subtitle">A focused workspace for appointments, service operations, and admin controls.</p>
         </div>
-        <div class="admin-topbar-actions">
-          <div class="admin-user-chip">
-            <span class="admin-user-chip-label">Admin</span>
-            <strong>{{ admin_email }}</strong>
-          </div>
-          <a href="/admin/logout" class="admin-logout-btn"><i class="fas fa-right-from-bracket"></i><span>Logout</span></a>
-        </div>
       </header>
 
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-          <div class="admin-flashes">
+          <div class="admin-flash-source" hidden>
             {% for category, message in messages %}
-              <div class="admin-flash admin-flash-{{ category }}">{{ message }}</div>
+              <div class="admin-flash-source-item" data-toast-category="{{ category }}" data-toast-title="{{ 'Success' if category == 'success' else 'Action Failed' if category == 'error' else 'Update' }}" data-toast-message="{{ message }}"></div>
             {% endfor %}
           </div>
         {% endif %}
       {% endwith %}
 
+      <div id="adminToastStack" class="admin-toast-stack" aria-live="polite" aria-atomic="false"></div>
+
       {% block content %}{% endblock %}
     </main>
   </div>
+
+  <script>
+    (() => {
+      const loader = document.getElementById('adminPageLoader');
+      const toastStack = document.getElementById('adminToastStack');
+      const flashSourceItems = document.querySelectorAll('.admin-flash-source-item');
+
+      const toastPalette = {
+        success: { accent: '#d4af37', icon: 'fa-check', title: 'Status Updated' },
+        error: { accent: '#c0392b', icon: 'fa-xmark', title: 'Action Failed' },
+        info: { accent: '#4a90d9', icon: 'fa-bell', title: 'Information' },
+        warning: { accent: '#d9a441', icon: 'fa-triangle-exclamation', title: 'Warning' },
+      };
+
+      const getToastConfig = (category) => toastPalette[(category || '').toLowerCase()] || toastPalette.info;
+
+      const showToast = ({ category = 'info', title, message }) => {
+        if (!toastStack) return;
+
+        const config = getToastConfig(category);
+        const toast = document.createElement('div');
+        toast.className = 'admin-toast';
+        toast.dataset.category = category;
+        toast.style.setProperty('--toast-accent', config.accent);
+        toast.innerHTML = `
+          <div class="admin-toast-icon" aria-hidden="true"><i class="fas ${config.icon}"></i></div>
+          <div class="admin-toast-body">
+            <strong class="admin-toast-title">${title || config.title}</strong>
+            <span class="admin-toast-message">${message || ''}</span>
+          </div>
+          <button type="button" class="admin-toast-close" aria-label="Dismiss notification">×</button>
+          <div class="admin-toast-progress"></div>
+        `;
+
+        const closeToast = () => {
+          if (!toast.isConnected || toast.classList.contains('is-dismissing')) return;
+          toast.classList.add('is-dismissing');
+          window.setTimeout(() => toast.remove(), 240);
+        };
+
+        toast.querySelector('.admin-toast-close')?.addEventListener('click', closeToast);
+        toastStack.appendChild(toast);
+
+        window.requestAnimationFrame(() => toast.classList.add('is-visible'));
+        window.setTimeout(closeToast, 4000);
+      };
+
+      window.adminNotify = showToast;
+
+      flashSourceItems.forEach((item) => {
+        showToast({
+          category: item.dataset.toastCategory || 'info',
+          title: item.dataset.toastTitle || undefined,
+          message: item.dataset.toastMessage || '',
+        });
+      });
+
+      if (!loader) return;
+
+      const showLoader = () => {
+        loader.classList.add('is-visible');
+        loader.setAttribute('aria-hidden', 'false');
+      };
+
+      const hideLoader = () => {
+        loader.classList.remove('is-visible');
+        loader.setAttribute('aria-hidden', 'true');
+      };
+
+      // show during initial paint, then fade out once everything is ready
+      showLoader();
+      window.addEventListener('load', () => {
+        window.setTimeout(hideLoader, 120);
+      });
+
+      // show during internal navigation and form submissions
+      document.addEventListener('click', (event) => {
+        const link = event.target.closest('a[href]');
+        if (!link) return;
+        const url = new URL(link.href, window.location.href);
+        if (url.origin !== window.location.origin || link.target === '_blank' || link.hasAttribute('download')) return;
+        showLoader();
+      });
+
+      document.addEventListener('submit', (event) => {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement)) return;
+        showLoader();
+      });
+
+      window.addEventListener('beforeunload', showLoader);
+    })();
+  </script>
 </body>
 </html>

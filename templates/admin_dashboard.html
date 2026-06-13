@@ -33,7 +33,7 @@
   <section class="admin-stats">
     <div class="admin-stat-card"><i class="fas fa-inbox"></i><span>Total</span><strong>{{ stats.total }}</strong></div>
     <div class="admin-stat-card"><i class="fas fa-hourglass-half"></i><span>Pending</span><strong>{{ stats.pending }}</strong></div>
-    <div class="admin-stat-card"><i class="fas fa-badge-check"></i><span>Confirmed</span><strong>{{ stats.confirmed }}</strong></div>
+    <div class="admin-stat-card"><i class="fas fa-handshake"></i><span>Confirmed</span><strong>{{ stats.confirmed }}</strong></div>
     <div class="admin-stat-card"><i class="fas fa-circle-check"></i><span>Completed</span><strong>{{ stats.completed }}</strong></div>
     <div class="admin-stat-card"><i class="fas fa-circle-xmark"></i><span>Cancelled</span><strong>{{ stats.cancelled }}</strong></div>
   </section>
@@ -52,7 +52,25 @@
         <p>View, edit, cancel, or delete client bookings directly from the backend.</p>
       </div>
 
-      <div class="admin-table-wrap">
+      <div class="admin-table-wrap" data-section-loader="appointments">
+        <div class="admin-section-loader" hidden>
+          <div class="admin-skeleton-block">
+            <div class="admin-skeleton-row admin-skeleton-line" style="width: 34%"></div>
+            <div class="admin-skeleton-table">
+              {% for _ in range(5) %}
+              <div class="admin-skeleton-table-row">
+                <div class="admin-skeleton-row admin-skeleton-line"></div>
+                <div class="admin-skeleton-row admin-skeleton-line sm"></div>
+                <div class="admin-skeleton-row admin-skeleton-line"></div>
+                <div class="admin-skeleton-row admin-skeleton-line xs"></div>
+                <div class="admin-skeleton-row admin-skeleton-line xs"></div>
+                <div class="admin-skeleton-row admin-skeleton-pill"></div>
+                <div class="admin-skeleton-row admin-skeleton-pill"></div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
         <table class="admin-table">
           <thead>
             <tr>
@@ -83,11 +101,19 @@
               <td>{{ appointment.appointment_time[:5] if appointment.appointment_time else '' }}</td>
               <td>
                 <form method="post" action="/admin/appointments/{{ appointment.id }}/status" class="admin-inline-form">
-                  <select name="status">
-                    {% for option in ['pending', 'confirmed', 'completed', 'cancelled'] %}
-                      <option value="{{ option }}" {% if appointment.status == option %}selected{% endif %}>{{ option|capitalize }}</option>
-                    {% endfor %}
-                  </select>
+                  <div class="status-dropdown">
+                    <select name="status" class="status-select">
+                      {% for option in ['pending', 'confirmed', 'completed', 'cancelled'] %}
+                        <option value="{{ option }}" {% if appointment.status == option %}selected{% endif %}>{{ option|capitalize }}</option>
+                      {% endfor %}
+                    </select>
+                    <button type="button" class="status-trigger" aria-haspopup="listbox" aria-expanded="false">{{ (appointment.status or 'pending')|capitalize }} <span class="caret">▾</span></button>
+                    <div class="status-panel" role="listbox" hidden>
+                      {% for option in ['pending', 'confirmed', 'completed', 'cancelled'] %}
+                        <div tabindex="0" class="status-item {% if appointment.status == option %}active{% endif %}" data-value="{{ option }}">{{ option|capitalize }}</div>
+                      {% endfor %}
+                    </div>
+                  </div>
                   <button type="submit" class="admin-mini-btn">Update</button>
                 </form>
               </td>
@@ -124,7 +150,17 @@
         <p>Quick view of the first items in the schedule so the team can prioritize the day.</p>
       </div>
 
-      <div class="admin-queue-list">
+      <div class="admin-queue-list" data-section-loader="queue">
+        <div class="admin-section-loader" hidden>
+          <div class="admin-skeleton-block">
+            {% for _ in range(4) %}
+              <div class="admin-skeleton-table-row" style="grid-template-columns: 1fr auto;">
+                <div class="admin-skeleton-row admin-skeleton-line"></div>
+                <div class="admin-skeleton-row admin-skeleton-pill"></div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
         {% for appointment in appointments[:5] %}
           <article class="admin-queue-item">
             <div>
@@ -159,15 +195,26 @@
       const refreshInterval = 10000;
       const tableBody = document.querySelector('.admin-table tbody');
       const queueList = document.querySelector('.admin-queue-list');
+      const appointmentSectionLoader = document.querySelector('[data-section-loader="appointments"] .admin-section-loader');
+      const queueSectionLoader = document.querySelector('[data-section-loader="queue"] .admin-section-loader');
       const statCards = document.querySelectorAll('.admin-stat-card strong');
       const heroTotal = document.querySelector('.admin-hero-stat strong');
       const heroMetaPending = document.querySelector('.admin-hero-meta div:first-child strong');
       const heroMetaConfirmed = document.querySelector('.admin-hero-meta div:last-child strong');
       const lastUpdatedNode = document.getElementById('adminLastUpdated');
-      const liveToast = document.getElementById('adminLiveToast');
       let lastSignature = null;
       let lastTotal = Number.parseInt((heroTotal && heroTotal.textContent) || '0', 10) || 0;
-      let toastTimer = null;
+
+      function setSectionLoading(state) {
+        [appointmentSectionLoader, queueSectionLoader].forEach((loader) => {
+          if (!loader) return;
+          loader.hidden = !state;
+          loader.classList.toggle('is-visible', state);
+        });
+        document.querySelectorAll('.admin-table-wrap, .admin-queue-list').forEach((panel) => {
+          panel.classList.toggle('is-loading', state);
+        });
+      }
 
       function escapeHtml(value) {
         return String(value ?? '')
@@ -179,15 +226,14 @@
       }
 
       function renderStatusOptions(currentStatus) {
-        return ['pending', 'confirmed', 'completed', 'cancelled']
-          .map(option => `<option value="${option}" ${currentStatus === option ? 'selected' : ''}>${option.charAt(0).toUpperCase() + option.slice(1)}</option>`)
-          .join('');
+            return ['pending', 'confirmed', 'completed', 'cancelled']
+              .map(option => `<option value="${option}" ${currentStatus === option ? 'selected' : ''}>${option.charAt(0).toUpperCase() + option.slice(1)}</option>`)
+              .join('');
       }
 
       function renderAppointments(appointments) {
         if (!tableBody) return;
-
-        tableBody.innerHTML = appointments.map(appointment => `
+        const rows = appointments.map(appointment => `
           <tr>
             <td><strong>${escapeHtml(appointment.first_name)} ${escapeHtml(appointment.last_name)}</strong></td>
             <td>
@@ -202,7 +248,18 @@
             <td>${escapeHtml((appointment.appointment_time || '').slice(0, 5))}</td>
             <td>
               <form method="post" action="/admin/appointments/${escapeHtml(appointment.id)}/status" class="admin-inline-form">
-                <select name="status">${renderStatusOptions((appointment.status || 'pending').toLowerCase())}</select>
+                <div class="status-dropdown">
+                  <select name="status" class="status-select">${renderStatusOptions((appointment.status || 'pending').toLowerCase())}</select>
+                  <button type="button" class="status-trigger" aria-haspopup="listbox" aria-expanded="false">
+                    ${escapeHtml((appointment.status || 'pending').charAt(0).toUpperCase() + (appointment.status || 'pending').slice(1))}
+                    <span class="caret">▾</span>
+                  </button>
+                  <div class="status-panel" role="listbox" hidden>
+                    ${['pending','confirmed','completed','cancelled'].map(option => `
+                      <div tabindex="0" class="status-item ${option === (appointment.status || 'pending') ? 'active' : ''}" data-value="${option}">${option.charAt(0).toUpperCase() + option.slice(1)}</div>
+                    `).join('')}
+                  </div>
+                </div>
                 <button type="submit" class="admin-mini-btn">Update</button>
               </form>
             </td>
@@ -225,6 +282,10 @@
             </td>
           </tr>
         `).join('');
+
+        tableBody.innerHTML = rows;
+        // attach dropdown handlers to newly rendered rows
+        attachStatusDropdowns(tableBody);
       }
 
       function renderQueue(appointments) {
@@ -288,27 +349,99 @@
         return JSON.stringify({ stats, appointments: compactAppointments });
       }
 
+      function notifyToast(category, title, message) {
+        if (typeof window.adminNotify === 'function') {
+          window.adminNotify({ category, title, message });
+        }
+      }
+
       function showNewAppointmentToast(newCount) {
-        if (!liveToast) return;
         const safeCount = Math.max(0, Number(newCount) || 0);
         if (!safeCount) return;
-        liveToast.textContent = safeCount === 1
-          ? '1 new appointment just arrived.'
-          : `${safeCount} new appointments just arrived.`;
-        liveToast.hidden = false;
-        liveToast.classList.add('is-visible');
-
-        if (toastTimer) clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => {
-          liveToast.classList.remove('is-visible');
-          liveToast.hidden = true;
-        }, 2600);
+        notifyToast(
+          'info',
+          safeCount === 1 ? 'New Booking' : 'New Bookings',
+          safeCount === 1
+            ? '1 new appointment just arrived.'
+            : `${safeCount} new appointments just arrived.`
+        );
       }
+
+      // --- Custom dropdown behavior for status selects ---
+      function attachStatusDropdowns(root=document) {
+        root.querySelectorAll('.status-dropdown').forEach(drop => {
+          const select = drop.querySelector('.status-select');
+          const trigger = drop.querySelector('.status-trigger');
+          const panel = drop.querySelector('.status-panel');
+          if (!select || !trigger || !panel) return;
+
+          // ensure panel hidden state reflects attribute
+          function closePanel() {
+            panel.hidden = true;
+            panel.classList.remove('is-open');
+            trigger.setAttribute('aria-expanded', 'false');
+          }
+
+          function openPanel() {
+            panel.hidden = false;
+            panel.classList.add('is-open');
+            trigger.setAttribute('aria-expanded', 'true');
+          }
+
+          // click trigger toggles panel
+          trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (panel.hidden) openPanel(); else closePanel();
+          });
+
+          // clicking an item selects it and updates native select
+          panel.querySelectorAll('.status-item').forEach(item => {
+            item.addEventListener('click', (ev) => {
+              ev.stopPropagation();
+              const val = item.dataset.value;
+              // update native select
+              select.value = val;
+              // update trigger label
+              trigger.childNodes[0].nodeValue = item.textContent;
+              // mark active
+              panel.querySelectorAll('.status-item').forEach(it => it.classList.remove('active'));
+              item.classList.add('active');
+              closePanel();
+            });
+            item.addEventListener('keydown', (ev) => {
+              if (ev.key === 'Enter' || ev.key === ' ') {
+                ev.preventDefault();
+                item.click();
+              }
+            });
+          });
+
+          // close on outside click
+          document.addEventListener('click', (e) => {
+            if (!drop.contains(e.target)) closePanel();
+          });
+
+          // keyboard support
+          trigger.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault(); openPanel();
+              panel.querySelector('.status-item')?.focus();
+            }
+          });
+        });
+      }
+
+      // initial attach
+      attachStatusDropdowns();
+
 
       async function refreshDashboard() {
         try {
           const response = await fetch(refreshUrl, { credentials: 'same-origin' });
-          if (!response.ok) return;
+          if (!response.ok) {
+            notifyToast('error', 'Action Failed', 'Unable to refresh appointments right now.');
+            return;
+          }
           const data = await response.json();
           const appointments = data.appointments || [];
           const stats = data.stats || { total: 0, pending: 0, confirmed: 0, completed: 0, cancelled: 0 };
@@ -330,6 +463,7 @@
           lastTotal = stats.total || 0;
         } catch (error) {
           console.warn('Dashboard refresh failed:', error);
+          notifyToast('error', 'Action Failed', 'Unable to refresh appointments right now.');
         }
       }
 
@@ -393,5 +527,4 @@
     </div>
   </div>
 
-  <div id="adminLiveToast" class="admin-live-toast" hidden role="status" aria-live="polite"></div>
 {% endblock %}
